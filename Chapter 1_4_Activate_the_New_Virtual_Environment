@@ -1,0 +1,43 @@
+import os
+import sys
+import subprocess
+from pathlib import Path
+
+def main():
+    print("=== VCRYPTO ENVIRONMENT CHECK ===")
+
+    env_path = Path("vcrypto")
+
+    if os.name == "nt":
+        python_path = env_path / "Scripts" / "python.exe"
+        activate_path = env_path / "Scripts" / "activate.bat"
+    else:
+        python_path = env_path / "bin" / "python"
+        activate_path = env_path / "bin" / "activate"
+
+    print("Environment folder:", env_path.resolve())
+
+    if env_path.exists():
+        print("Status: vcrypto folder exists.")
+    else:
+        print("Status: vcrypto folder not found.")
+
+    if python_path.exists():
+        print("Environment Python:", python_path)
+        result = subprocess.run(
+            [str(python_path), "--version"],
+            capture_output=True,
+            text=True
+        )
+        print("Python version:", result.stdout.strip())
+    else:
+        print("Environment Python executable not found.")
+
+    print("Activation script exists:", activate_path.exists())
+
+    print("\nCheck completed.")
+    print("This program checks the environment;")
+    print("it does not activate it in the current terminal.")
+
+if __name__ == "__main__":
+    main()

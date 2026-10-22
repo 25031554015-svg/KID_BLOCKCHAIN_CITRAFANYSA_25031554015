@@ -1,0 +1,34 @@
+import os
+import sys
+import shutil
+import subprocess
+
+def main():
+    print("=== Virtual Environment Check ===")
+
+    conda_env = os.environ.get("CONDA_DEFAULT_ENV")
+    virtual_env = os.environ.get("VIRTUAL_ENV")
+
+    print("Python executable:", sys.executable)
+
+    if conda_env:
+        print("Active Conda environment:", conda_env)
+    else:
+        print("No active Conda environment detected.")
+
+    if virtual_env:
+        print("Active virtual environment:", virtual_env)
+    else:
+        print("No VIRTUAL_ENV variable detected.")
+
+    if shutil.which("conda"):
+        print("Conda command is available.")
+    else:
+        print("Conda command is not available in PATH.")
+
+    print("\nCheck complete.")
+    print("Note: This program checks the environment;")
+    print("it does not deactivate Conda automatically.")
+
+if __name__ == "__main__":
+    main()

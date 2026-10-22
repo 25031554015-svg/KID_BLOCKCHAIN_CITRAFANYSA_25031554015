@@ -1,0 +1,119 @@
+import hashlib
+import json
+import copy
+
+DIFFICULTY = 2
+
+
+def block_hash(block):
+    content = {
+        "height": block["height"],
+        "txs": block["txs"],
+        "previous_hash": block["previous_hash"],
+        "nonce": block["nonce"]
+    }
+
+    encoded = json.dumps(content, sort_keys=True).encode()
+    return hashlib.sha256(encoded).hexdigest()
+
+
+def mine(height, txs, previous_hash):
+    block = {
+        "height": height,
+        "txs": copy.deepcopy(txs),
+        "previous_hash": previous_hash,
+        "nonce": 0
+    }
+
+    while True:
+        digest = block_hash(block)
+
+        if digest.startswith("0" * DIFFICULTY):
+            block["hash"] = digest
+            return block
+
+        block["nonce"] += 1
+
+
+def valid(chain, trusted_tip=None, difficulty=DIFFICULTY):
+    if not chain:
+        return False
+
+    previous = "0" * 64
+
+    for index, block in enumerate(chain):
+        if block["height"] != index:
+            return False
+
+        if block["previous_hash"] != previous:
+            return False
+
+        digest = block_hash(block)
+
+        if block["hash"] != digest:
+            return False
+
+        if not digest.startswith("0" * difficulty):
+            return False
+
+        previous = digest
+
+    return trusted_tip is None or previous == trusted_tip
+
+
+def demo():
+    # Create sample transactions
+    data = [
+        [{"event": "class opened"}],
+        [{"from": "Andi", "to": "Bima", "amount": 10}],
+        [{"from": "Bima", "to": "Citra", "amount": 4}]
+    ]
+
+    # Build the original blockchain
+    chain = []
+    previous = "0" * 64
+
+    for index, transactions in enumerate(data):
+        block = mine(index, transactions, previous)
+        chain.append(block)
+        previous = block["hash"]
+
+    # Store the original trusted final hash
+    trusted_tip = chain[-1]["hash"]
+
+    # Modify the transaction without mining again
+    changed = copy.deepcopy(chain)
+    changed[1]["txs"][0]["amount"] = 900
+
+    # Rebuild the modified blockchain
+    rebuilt = []
+    previous = "0" * 64
+
+    for block in changed:
+        new_block = mine(
+            block["height"],
+            block["txs"],
+            previous
+        )
+        rebuilt.append(new_block)
+        previous = new_block["hash"]
+
+    # Perform four verification tests
+    results = {
+        "Original chain": valid(chain),
+        "Modified data without re-mining": valid(changed),
+        "Rebuilt and re-mined chain": valid(rebuilt),
+        "Rebuilt chain compared with original trusted tip":
+            valid(rebuilt, trusted_tip=trusted_tip)
+    }
+
+    for description, result in results.items():
+        print(f"{description}: {result}")
+
+    assert list(results.values()) == [True, False, True, False]
+
+    return chain, changed, rebuilt, trusted_tip
+
+
+if __name__ == "__main__":
+    demo()

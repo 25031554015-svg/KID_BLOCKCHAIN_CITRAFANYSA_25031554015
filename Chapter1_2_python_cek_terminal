@@ -1,0 +1,33 @@
+import os
+import sys
+import shutil
+import subprocess
+
+def main():
+    print("=== Virtual Environment Terminal Simulation ===")
+
+    print("Python executable:", sys.executable)
+    print("Python version:", sys.version.split()[0])
+
+    uv_path = shutil.which("uv")
+
+    if uv_path:
+        print("UV command found:", uv_path)
+    else:
+        print("UV command not found in PATH.")
+
+    print("\nSimulating a new terminal session...")
+    print("Current working directory:", os.getcwd())
+
+    print("\nChecking whether the vcrypto folder exists:")
+    if os.path.isdir("vcrypto"):
+        print("vcrypto environment folder exists.")
+    else:
+        print("vcrypto environment folder does not exist.")
+
+    print("\nImportant:")
+    print("Opening a new terminal does not install packages.")
+    print("It only starts a new command-line session.")
+
+if __name__ == "__main__":
+    main()

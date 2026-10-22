@@ -1,0 +1,30 @@
+import hashlib
+import json
+import sys
+
+def main():
+    print("=== Dependency Check ===")
+    print("Python version:", sys.version.split()[0])
+
+    # Test hashlib
+    text = "Blockchain"
+    digest = hashlib.sha256(text.encode()).hexdigest()
+    print("\nHashlib test:")
+    print("Input:", text)
+    print("SHA-256:", digest)
+
+    # Test json
+    data = {
+        "name": "Andi",
+        "amount": 10
+    }
+
+    json_text = json.dumps(data)
+    print("\nJSON test:")
+    print("Encoded:", json_text)
+    print("Decoded:", json.loads(json_text))
+
+    print("\nBoth standard-library modules work.")
+
+if __name__ == "__main__":
+    main()

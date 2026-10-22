@@ -1,0 +1,26 @@
+import hashlib
+import json
+
+def encode(obj):
+    return json.dumps(
+        obj,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=False
+    ).encode("utf-8")
+
+def block_hash(block):
+    body = {k: v for k, v in block.items() if k != "hash"}
+    return hashlib.sha256(encode(body)).hexdigest()
+
+# Contoh data blok
+block = {
+    "height": 1,
+    "previous_hash": "000abc",
+    "transactions": [
+        {"from": "Alice", "to": "Bob", "amount": 10}
+    ]
+}
+
+print("Hasil encoding:", encode(block))
+print("Hash blok:", block_hash(block))
